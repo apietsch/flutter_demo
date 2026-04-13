@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_demo/features/lorem/data/lorem_repository.dart';
+import 'package:flutter_demo/features/swipe/ui/swipe_demo_page.dart';
 
 class LoremLoaderPage extends StatefulWidget {
   const LoremLoaderPage({
@@ -76,7 +77,20 @@ class _LoremLoaderPageState extends State<LoremLoaderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Lorem Loader')),
+      appBar: AppBar(
+        title: const Text('Lorem Loader'),
+        actions: [
+          IconButton(
+            tooltip: 'Open swipe demo',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SwipeDemoPage()),
+              );
+            },
+            icon: const Icon(Icons.swipe),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
