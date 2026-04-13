@@ -7,7 +7,6 @@ class AuthSessionStore {
     : _storage = storage ?? const FlutterSecureStorage();
 
   static const String _sessionKey = 'auth_session';
-  static const String _rememberMeKey = 'remember_me';
   final FlutterSecureStorage _storage;
 
   Future<void> save(Map<String, dynamic> jsonMap) async {
@@ -36,14 +35,5 @@ class AuthSessionStore {
 
   Future<void> clear() async {
     await _storage.delete(key: _sessionKey);
-  }
-
-  Future<void> saveRememberMe(bool value) async {
-    await _storage.write(key: _rememberMeKey, value: value ? '1' : '0');
-  }
-
-  Future<bool> loadRememberMe() async {
-    final value = await _storage.read(key: _rememberMeKey);
-    return value == '1';
   }
 }

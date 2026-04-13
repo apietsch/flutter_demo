@@ -88,7 +88,7 @@ class _FakeAuthService implements AuthService {
   final AuthSession? _session;
 
   @override
-  Future<AuthSession> signIn({required bool rememberMe}) async {
+  Future<AuthSession> signIn() async {
     if (_session == null) {
       throw const AuthException('Not authenticated');
     }
@@ -110,14 +110,6 @@ class _FakeAuthService implements AuthService {
 
   @override
   Future<void> clearSession() async {}
-
-  @override
-  Future<bool> loadRememberMe() async {
-    return false;
-  }
-
-  @override
-  Future<void> saveRememberMe(bool value) async {}
 
   @override
   Future<void> signOut(AuthSession? session) async {}

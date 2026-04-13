@@ -8,22 +8,18 @@ void main() {
       signInSession: _session(expiresInMinutes: 10),
     );
     final controller = AuthController(authService: service);
-    controller.setRememberMe(true);
 
     await controller.signIn();
 
     expect(controller.status, AuthStatus.authenticated);
     expect(controller.session?.preferredUsername, 'demo');
     expect(controller.errorMessage, isNull);
-    expect(service.lastRememberMeOnSignIn, isTrue);
-    expect(service.savedRememberMe, isTrue);
   });
 
   test('initialize restores persisted session', () async {
     final controller = AuthController(
       authService: _FakeAuthService(
         restoredSession: _session(expiresInMinutes: 10),
-        rememberedPreference: true,
       ),
     );
 
@@ -31,7 +27,6 @@ void main() {
 
     expect(controller.status, AuthStatus.authenticated);
     expect(controller.session?.email, 'demo@example.com');
-    expect(controller.rememberMe, isTrue);
   });
 
   test('ensureFreshSession refreshes shortly expiring token', () async {
@@ -103,17 +98,13 @@ class _FakeAuthService implements AuthService {
     this.restoredSession,
     this.refreshedSession,
     this.refreshError,
-    this.rememberedPreference = false,
   });
 
   final AuthSession? signInSession;
   final AuthSession? restoredSession;
   final AuthSession? refreshedSession;
   final AuthException? refreshError;
-  final bool rememberedPreference;
   int refreshCalls = 0;
-  bool? savedRememberMe;
-  bool? lastRememberMeOnSignIn;
 
   @override
   Future<void> clearSession() async {}
@@ -125,8 +116,7 @@ class _FakeAuthService implements AuthService {
   Future<AuthSession?> restoreSession() async => restoredSession;
 
   @override
-  Future<AuthSession> signIn({required bool rememberMe}) async {
-    lastRememberMeOnSignIn = rememberMe;
+  Future<AuthSession> signIn() async {
     final session = signInSession;
     if (session == null) {
       throw const AuthException('Authentication failed.');
@@ -149,13 +139,5 @@ class _FakeAuthService implements AuthService {
       throw const AuthException('Failed to refresh session.');
     }
     return session;
-  }
-
-  @override
-  Future<bool> loadRememberMe() async => rememberedPreference;
-
-  @override
-  Future<void> saveRememberMe(bool value) async {
-    savedRememberMe = value;
   }
 }
