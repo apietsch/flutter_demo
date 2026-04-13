@@ -1,3 +1,5 @@
+import 'package:flutter_demo/features/auth/state/auth_controller.dart';
+import 'package:flutter_demo/features/auth/ui/login_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_demo/features/lorem/data/lorem_repository.dart';
 import 'package:flutter_demo/features/swipe/ui/swipe_demo_page.dart';
@@ -6,10 +8,12 @@ class LoremLoaderPage extends StatefulWidget {
   const LoremLoaderPage({
     super.key,
     required this.loader,
+    required this.authController,
     this.initialUrl = 'https://brettterpstra.com/md-lipsum/api/1',
   });
 
   final LoremTextLoader loader;
+  final AuthController authController;
   final String initialUrl;
 
   @override
@@ -96,20 +100,49 @@ class _LoremLoaderPageState extends State<LoremLoaderPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _urlController,
-              keyboardType: TextInputType.url,
-              decoration: const InputDecoration(
-                labelText: 'Text URL',
-                hintText: 'https://example.com/lorem.txt',
-                border: OutlineInputBorder(),
-              ),
-            ),
+            LoginPanel(controller: widget.authController),
             const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: _isLoading ? null : _loadText,
-              icon: const Icon(Icons.cloud_download),
-              label: const Text('Load'),
+            AnimatedBuilder(
+              animation: widget.authController,
+              builder: (context, _) {
+                final isAuthed = widget.authController.isAuthenticated;
+                return TextField(
+                  controller: _urlController,
+                  keyboardType: TextInputType.url,
+                  enabled: isAuthed,
+                  decoration: const InputDecoration(
+                    labelText: 'Text URL',
+                    hintText: 'https://example.com/lorem.txt',
+                    border: OutlineInputBorder(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            AnimatedBuilder(
+              animation: widget.authController,
+              builder: (context, _) {
+                if (widget.authController.isAuthenticated) {
+                  return const SizedBox.shrink();
+                }
+                return const Text(
+                  'Please sign in first to load content.',
+                  style: TextStyle(color: Colors.orange),
+                );
+              },
+            ),
+            const SizedBox(height: 4),
+            AnimatedBuilder(
+              animation: widget.authController,
+              builder: (context, _) {
+                final canLoad =
+                    widget.authController.isAuthenticated && !_isLoading;
+                return FilledButton.icon(
+                  onPressed: canLoad ? _loadText : null,
+                  icon: const Icon(Icons.cloud_download),
+                  label: const Text('Load'),
+                );
+              },
             ),
             const SizedBox(height: 16),
             Expanded(
