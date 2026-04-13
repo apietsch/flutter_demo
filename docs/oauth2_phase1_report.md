@@ -1,7 +1,7 @@
 # OAuth2 Phase 1 Delivery Report
 
 ## Reference Proposal
-- Proposal file: `docs/oauth2_keycloak_integration_proposal.md`
+- Proposal file: `docs/02_oauth2_keycloak_integration_proposal.md`
 
 ## Summary
 Phase 1 was implemented for iOS simulator and macOS using Keycloak OIDC with Authorization Code + PKCE via `flutter_appauth`.

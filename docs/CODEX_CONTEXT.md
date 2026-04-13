@@ -75,13 +75,15 @@ docker compose -f infra/keycloak/docker-compose.yml down
 
 ## Documentation Map
 - Keycloak + OAuth planning:
-  - `docs/oauth2_keycloak_integration_proposal.md`
+  - `docs/02_oauth2_keycloak_integration_proposal.md`
+- Remember-me + secure storage planning:
+  - `docs/03_remember_me_and_secure_storage_proposal.md`
 - Phase 1 delivery comparison:
   - `docs/oauth2_phase1_report.md`
 - Phase 2 refresh-token delivery comparison:
   - `docs/oauth2_phase2_refresh_report.md`
 - Earlier lorem feature proposal:
-  - `docs/lorem_loader_proposal.md`
+  - `docs/01_lorem_loader_proposal.md`
 
 ## Known Operational Notes
 - iOS simulator detection can intermittently fail; booting simulator explicitly resolves it.

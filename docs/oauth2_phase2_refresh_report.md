@@ -1,7 +1,7 @@
 # OAuth2 Phase 2 Delivery Report (Refresh Token Focus)
 
 ## Reference Proposal
-- Proposal file: `docs/oauth2_keycloak_integration_proposal.md`
+- Proposal file: `docs/02_oauth2_keycloak_integration_proposal.md`
 - Phase 1 report: `docs/oauth2_phase1_report.md`
 
 ## Goal for Phase 2
