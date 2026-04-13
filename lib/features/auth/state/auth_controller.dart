@@ -15,12 +15,14 @@ class AuthController extends ChangeNotifier {
   AuthStatus _status = AuthStatus.loggedOut;
   AuthSession? _session;
   String? _errorMessage;
+  DateTime? _lastRefreshAt;
   Timer? _refreshTimer;
   bool _initialized = false;
 
   AuthStatus get status => _status;
   AuthSession? get session => _session;
   String? get errorMessage => _errorMessage;
+  DateTime? get lastRefreshAt => _lastRefreshAt;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
   bool get isLoading => _status == AuthStatus.loading;
 
@@ -52,6 +54,7 @@ class AuthController extends ChangeNotifier {
       await _authService.persistSession(_session!);
       _status = AuthStatus.authenticated;
       _errorMessage = null;
+      _lastRefreshAt = null;
       _scheduleRefresh();
     } on AuthCancelledException catch (error) {
       _status = AuthStatus.loggedOut;
@@ -82,6 +85,7 @@ class AuthController extends ChangeNotifier {
     _session = null;
     _status = AuthStatus.loggedOut;
     _errorMessage = null;
+    _lastRefreshAt = null;
     notifyListeners();
   }
 
@@ -106,6 +110,7 @@ class AuthController extends ChangeNotifier {
       await _authService.persistSession(refreshed);
       _status = AuthStatus.authenticated;
       _errorMessage = null;
+      _lastRefreshAt = DateTime.now();
       _scheduleRefresh();
       notifyListeners();
       return true;
@@ -157,6 +162,7 @@ class AuthController extends ChangeNotifier {
     _session = null;
     _status = AuthStatus.loggedOut;
     _errorMessage = message;
+    _lastRefreshAt = null;
     await _authService.clearSession();
     notifyListeners();
   }

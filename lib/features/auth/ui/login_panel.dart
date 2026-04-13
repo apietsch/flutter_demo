@@ -25,8 +25,18 @@ class LoginPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 if (controller.isAuthenticated)
-                  Text(
-                    'Signed in as ${session?.preferredUsername ?? session?.email ?? 'user'}',
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Signed in as ${session?.preferredUsername ?? session?.email ?? 'user'}',
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Last token refresh: ${_formatRefreshTime(controller.lastRefreshAt)}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
                   )
                 else
                   const Text('Sign in with Keycloak to use protected actions.'),
@@ -64,5 +74,20 @@ class LoginPanel extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _formatRefreshTime(DateTime? value) {
+    if (value == null) {
+      return 'not yet';
+    }
+
+    final local = value.toLocal();
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    final second = local.second.toString().padLeft(2, '0');
+    final year = local.year.toString().padLeft(4, '0');
+    final month = local.month.toString().padLeft(2, '0');
+    final day = local.day.toString().padLeft(2, '0');
+    return '$year-$month-$day $hour:$minute:$second';
   }
 }
