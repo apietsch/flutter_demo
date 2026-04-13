@@ -3,9 +3,9 @@
 ## Snapshot
 - Repository: `flutter_demo`
 - Branch: `main`
-- HEAD: `f8663b6`
-- Remote sync: `main` is up to date with `origin/main`
-- Platform focus: macOS host, iOS simulator, Chrome web
+- Current HEAD: `0e3c3dd`
+- Remote status: local `main` is ahead of `origin/main` by 1 commit (Phase 2 refresh-token work)
+- Primary targets: iOS simulator, macOS desktop, Chrome web
 
 ## Commit Timeline (authoritative)
 1. `a5020da` - Add `AGENTS.md` for Flutter demo workflow
@@ -13,125 +13,80 @@
 3. `76571e5` - Add proposal for configurable lorem text loader
 4. `372fc55` - Implement configurable lorem text loader feature
 5. `f8663b6` - Add iOS swipe demo and enable macOS outbound networking
+6. `6a5f83b` - Add Codex context handoff documentation
+7. `2675787` - Add local Keycloak Docker setup and setup documentation
+8. `a44614f` - Add OAuth2 Keycloak integration proposal
+9. `7b85d65` - Implement OAuth2 Phase 1 with Keycloak login/logout
+10. `0e3c3dd` - Add refresh-token handling with persisted auth session
 
 ## Implemented Features
 
-### 1) Configurable lorem text loader
-- UI allows entering/editing URL and pressing `Load`
-- Fetches text over HTTP and renders in a scrollable text area
-- Handles states:
-  - loading spinner
-  - success content
-  - friendly error messages
-  - empty state prompt
+### 1) Lorem loader + swipe demo
+- URL-configurable text loading with loading/error/empty states
+- Swipe demo page with dismissible cards and reset flow
 
 Primary files:
-- `lib/main.dart`
-- `lib/features/lorem/data/lorem_repository.dart`
+- `lib/features/lorem/...`
+- `lib/features/swipe/...`
+
+### 2) OAuth2/OIDC login/logout (Phase 1)
+- Keycloak sign-in via browser (Authorization Code + PKCE)
+- Session state with login/logout UI
+- Protected loader action gated by authentication
+
+Primary files:
+- `lib/features/auth/config/auth_config.dart`
+- `lib/features/auth/data/auth_service.dart`
+- `lib/features/auth/state/auth_controller.dart`
+- `lib/features/auth/ui/login_panel.dart`
+- `ios/Runner/Info.plist`
+- `macos/Runner/Info.plist`
+
+### 3) Refresh-token + persisted session (Phase 2)
+- Secure persistence via `flutter_secure_storage`
+- Restore session on app start
+- Proactive refresh before expiry
+- Refresh-on-demand before protected load action
+- Clear local session on refresh failure
+
+Primary files:
+- `lib/features/auth/data/auth_session_store.dart`
+- `lib/features/auth/data/auth_service.dart`
+- `lib/features/auth/state/auth_controller.dart`
 - `lib/features/lorem/ui/lorem_loader_page.dart`
-- `test/lorem_repository_test.dart`
-- `test/widget_test.dart`
 
-### 2) Swipe demo screen (for iOS gesture demo)
-- Added dedicated page using `Dismissible` cards
-- Left/right swipe actions with feedback labels
-- Tracks last action and supports deck reset
-- Entry point: top-right swipe icon in `LoremLoaderPage` app bar
-
-Primary file:
-- `lib/features/swipe/ui/swipe_demo_page.dart`
-
-## Environment & Tooling Decisions
-- Flutter installed via Homebrew cask (`flutter` command available on host)
-- CocoaPods installed via Homebrew (instead of `gem install cocoapods`)
-- iOS simulator runtime present and usable when Simulator service is healthy
-
-## Platform-Specific Fixes Applied
-
-### macOS network failure fix
-Symptom observed: requests failing in macOS app context.
-Root cause: app sandbox entitlements missing outbound client network permission.
-
-Fix applied:
-- Added `com.apple.security.network.client = true` in:
-  - `macos/Runner/DebugProfile.entitlements`
-  - `macos/Runner/Release.entitlements`
-
-## Runbook
-
-### Standard checks
-```bash
-flutter pub get
-flutter analyze
-flutter test
-```
-
-### Run targets
-```bash
-flutter run -d chrome
-flutter run -d macos
-flutter run -d <ios-simulator-device-id>
-```
-
-### If iOS simulator is not detected
-```bash
-open -a Simulator
-xcrun simctl list runtimes
-xcrun simctl list devices
-flutter devices
-```
-If needed, boot a specific simulator:
-```bash
-xcrun simctl boot <device-id>
-```
-
-## Known Operational Notes
-- `flutter run -d ios` did not always resolve automatically in this environment; using explicit simulator device ID was reliable.
-- CoreSimulator service was intermittently unstable once; re-opening Simulator and booting device restored detection.
-- `pod install` in `ios/` is not always needed for the current plugin set, but may be required as plugins are added.
-
-## Existing Planning/Design Docs
-- Feature proposal doc:
-  - `docs/lorem_loader_proposal.md`
-
-## Suggested Next Steps for Future Sessions
-1. Add a small in-app preset list of safe demo URLs (plus custom URL field).
-2. Add integration test coverage for swipe interactions.
-3. Add `.vscode/launch.json` with explicit launch configs (`iOS`, `Chrome`, `macOS`).
-4. If desired, split macOS entitlement fix into a dedicated commit/changelog entry (already included in `f8663b6`).
-
-## Latest Setup: Local Keycloak (Docker)
-
-### Added files
-- `infra/keycloak/docker-compose.yml`
-- `infra/keycloak/realm/flutter-demo-realm.json`
-- `infra/keycloak/README.md`
-
-### What was configured
-- Keycloak container: `quay.io/keycloak/keycloak:26.1`
-- Local port mapping: `8080:8080`
-- Auto-import realm on startup (`--import-realm`)
+## Local Keycloak Setup
+- Docker stack in `infra/keycloak`
 - Realm: `flutter-demo`
-- OIDC public client: `flutter-app` with PKCE (`S256`)
-- Redirect URIs configured:
-  - `http://localhost/*`
-  - `http://127.0.0.1/*`
-  - `com.example.flutterDemo:/oauth2redirect`
-- Demo user:
-  - Username: `demo`
-  - Password: `demo123`
-- Admin credentials:
-  - Username: `admin`
-  - Password: `admin`
-
-### Verified working
-- Container starts successfully via compose.
-- OIDC discovery endpoint responds:
+- Client: `flutter-app` (public, PKCE)
+- Demo user: `demo` / `demo123`
+- OIDC discovery:
   - `http://localhost:8080/realms/flutter-demo/.well-known/openid-configuration`
 
-### Important fix during setup
-- Initial startup failed because one redirect URI in realm import was invalid.
-- Resolved by replacing wildcard host-port URI with valid patterns (`http://localhost/*` and `http://127.0.0.1/*`).
+Start/stop:
+```bash
+docker compose -f infra/keycloak/docker-compose.yml up -d
+docker compose -f infra/keycloak/docker-compose.yml down
+```
 
-## Quick Reconstruction Prompt (copy/paste for future Codex)
-"Read `AGENTS.md` and `docs/CODEX_CONTEXT.md` first. Continue from current `main` HEAD. Preserve existing lorem-loader and swipe-demo behavior. Validate with `flutter analyze` and `flutter test` before finalizing changes."
+## Validation Baseline
+- `flutter analyze`: passes
+- `flutter test`: passes
+
+## Documentation Map
+- Keycloak + OAuth planning:
+  - `docs/oauth2_keycloak_integration_proposal.md`
+- Phase 1 delivery comparison:
+  - `docs/oauth2_phase1_report.md`
+- Phase 2 refresh-token delivery comparison:
+  - `docs/oauth2_phase2_refresh_report.md`
+- Earlier lorem feature proposal:
+  - `docs/lorem_loader_proposal.md`
+
+## Known Operational Notes
+- iOS simulator detection can intermittently fail; booting simulator explicitly resolves it.
+- `flutter run -d ios` may not resolve target consistently; explicit simulator ID is reliable.
+- macOS app requires `com.apple.security.network.client=true` entitlement (already applied).
+
+## Quick Reconstruction Prompt
+"Read `AGENTS.md` and `docs/CODEX_CONTEXT.md` first. Use Keycloak from `infra/keycloak`. Preserve Phase 1 login/logout and Phase 2 refresh-token behavior. Validate with `flutter analyze` and `flutter test` before finalizing."
