@@ -142,6 +142,10 @@ class OidcAuthService implements AuthService {
 
   @override
   Future<void> signOut(AuthSession? session) async {
+    if (AuthConfig.localLogoutOnly) {
+      return;
+    }
+
     final idToken = session?.idToken;
     if (idToken == null) {
       return;

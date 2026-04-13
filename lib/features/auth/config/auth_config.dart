@@ -17,6 +17,10 @@ class AuthConfig {
     'AUTH_POST_LOGOUT_REDIRECT_URI',
     defaultValue: 'com.example.flutterDemo:/oauth2redirect',
   );
+  static const bool localLogoutOnly = bool.fromEnvironment(
+    'AUTH_LOCAL_LOGOUT_ONLY',
+    defaultValue: true,
+  );
 
   static const List<String> scopes = <String>['openid', 'profile', 'email'];
 }

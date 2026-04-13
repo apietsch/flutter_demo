@@ -90,6 +90,8 @@ docker compose -f infra/keycloak/docker-compose.yml down
   - `docs/02_oauth2_keycloak_integration_proposal.md`
 - Remember-me + secure storage planning:
   - `docs/03_remember_me_and_secure_storage_proposal.md`
+- Local logout UX planning:
+  - `docs/04_local_logout_only_proposal.md`
 - Phase 1 delivery comparison:
   - `docs/oauth2_phase1_report.md`
 - Phase 2 refresh-token delivery comparison:
@@ -103,6 +105,7 @@ docker compose -f infra/keycloak/docker-compose.yml down
 - iOS simulator detection can intermittently fail; booting simulator explicitly resolves it.
 - `flutter run -d ios` may not resolve target consistently; explicit simulator ID is reliable.
 - macOS app requires `com.apple.security.network.client=true` entitlement (already applied).
+- Local logout mode currently defaults to enabled (`AUTH_LOCAL_LOGOUT_ONLY=true`), so app logout clears local session only and does not call Keycloak end-session.
 
 ## Quick Reconstruction Prompt
 "Read `AGENTS.md` and `docs/CODEX_CONTEXT.md` first. Use Keycloak from `infra/keycloak`. Preserve Phase 1 login/logout and Phase 2 refresh-token behavior. Validate with `flutter analyze` and `flutter test` before finalizing."
