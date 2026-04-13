@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_demo/features/auth/state/auth_controller.dart';
 import 'package:flutter_demo/features/auth/ui/login_panel.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +32,7 @@ class _LoremLoaderPageState extends State<LoremLoaderPage> {
   void initState() {
     super.initState();
     _urlController = TextEditingController(text: widget.initialUrl);
+    unawaited(widget.authController.initialize());
   }
 
   @override
@@ -39,6 +42,11 @@ class _LoremLoaderPageState extends State<LoremLoaderPage> {
   }
 
   Future<void> _loadText() async {
+    final hasFreshSession = await widget.authController.ensureFreshSession();
+    if (!hasFreshSession) {
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;

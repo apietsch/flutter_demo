@@ -82,6 +82,7 @@ class _FakeAuthService implements AuthService {
         refreshToken: 'refresh',
         email: 'demo@example.com',
         preferredUsername: 'demo',
+        expiresAt: null,
       );
 
   final AuthSession? _session;
@@ -93,6 +94,22 @@ class _FakeAuthService implements AuthService {
     }
     return _session;
   }
+
+  @override
+  Future<AuthSession> refreshSession(AuthSession currentSession) async {
+    return currentSession;
+  }
+
+  @override
+  Future<AuthSession?> restoreSession() async {
+    return null;
+  }
+
+  @override
+  Future<void> persistSession(AuthSession session) async {}
+
+  @override
+  Future<void> clearSession() async {}
 
   @override
   Future<void> signOut(AuthSession? session) async {}

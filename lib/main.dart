@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_demo/features/auth/data/auth_service.dart';
+import 'package:flutter_demo/features/auth/data/auth_session_store.dart';
 import 'package:flutter_demo/features/auth/state/auth_controller.dart';
 import 'package:flutter_demo/features/lorem/data/lorem_repository.dart';
 import 'package:flutter_demo/features/lorem/ui/lorem_loader_page.dart';
@@ -11,7 +12,10 @@ void main() {
     MyApp(
       loader: LoremRepository(client: http.Client()),
       authController: AuthController(
-        authService: OidcAuthService(appAuth: const FlutterAppAuth()),
+        authService: OidcAuthService(
+          appAuth: const FlutterAppAuth(),
+          sessionStore: AuthSessionStore(),
+        ),
       ),
     ),
   );
