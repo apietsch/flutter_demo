@@ -1,30 +1,74 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_demo/features/lorem/data/lorem_repository.dart';
+import 'package:flutter_demo/features/lorem/ui/lorem_loader_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_demo_scaffold_tmp/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('renders controls on first load', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoremLoaderPage(loader: _FakeLoader.success('Lorem ipsum')),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Lorem Loader'), findsOneWidget);
+    expect(find.widgetWithText(TextField, 'Text URL'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Load'), findsOneWidget);
+    expect(
+      find.text('Press "Load" to fetch lorem ipsum text.'),
+      findsOneWidget,
+    );
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('loads and shows text', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoremLoaderPage(
+          loader: _FakeLoader.success('Lorem ipsum dolor sit amet'),
+        ),
+      ),
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Load'));
+    await tester.pump();
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Lorem ipsum dolor sit amet'), findsOneWidget);
   });
+
+  testWidgets('shows error on failed fetch', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoremLoaderPage(
+          loader: _FakeLoader.failure(
+            const LoremLoadException('Request failed with status 500.'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Load'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Request failed with status 500.'), findsOneWidget);
+  });
+}
+
+class _FakeLoader implements LoremTextLoader {
+  _FakeLoader.success(this._text) : _error = null;
+
+  _FakeLoader.failure(this._error) : _text = null;
+
+  final String? _text;
+  final Exception? _error;
+
+  @override
+  Future<String> fetchText(String url) async {
+    final error = _error;
+    if (error != null) {
+      throw error;
+    }
+    return _text ?? '';
+  }
 }
