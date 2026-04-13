@@ -100,5 +100,38 @@ xcrun simctl boot <device-id>
 3. Add `.vscode/launch.json` with explicit launch configs (`iOS`, `Chrome`, `macOS`).
 4. If desired, split macOS entitlement fix into a dedicated commit/changelog entry (already included in `f8663b6`).
 
+## Latest Setup: Local Keycloak (Docker)
+
+### Added files
+- `infra/keycloak/docker-compose.yml`
+- `infra/keycloak/realm/flutter-demo-realm.json`
+- `infra/keycloak/README.md`
+
+### What was configured
+- Keycloak container: `quay.io/keycloak/keycloak:26.1`
+- Local port mapping: `8080:8080`
+- Auto-import realm on startup (`--import-realm`)
+- Realm: `flutter-demo`
+- OIDC public client: `flutter-app` with PKCE (`S256`)
+- Redirect URIs configured:
+  - `http://localhost/*`
+  - `http://127.0.0.1/*`
+  - `com.example.flutterDemo:/oauth2redirect`
+- Demo user:
+  - Username: `demo`
+  - Password: `demo123`
+- Admin credentials:
+  - Username: `admin`
+  - Password: `admin`
+
+### Verified working
+- Container starts successfully via compose.
+- OIDC discovery endpoint responds:
+  - `http://localhost:8080/realms/flutter-demo/.well-known/openid-configuration`
+
+### Important fix during setup
+- Initial startup failed because one redirect URI in realm import was invalid.
+- Resolved by replacing wildcard host-port URI with valid patterns (`http://localhost/*` and `http://127.0.0.1/*`).
+
 ## Quick Reconstruction Prompt (copy/paste for future Codex)
 "Read `AGENTS.md` and `docs/CODEX_CONTEXT.md` first. Continue from current `main` HEAD. Preserve existing lorem-loader and swipe-demo behavior. Validate with `flutter analyze` and `flutter test` before finalizing changes."

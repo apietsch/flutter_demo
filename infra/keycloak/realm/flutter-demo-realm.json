@@ -1,0 +1,48 @@
+{
+  "realm": "flutter-demo",
+  "enabled": true,
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "clients": [
+    {
+      "clientId": "flutter-app",
+      "name": "Flutter Demo App",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "com.example.flutterDemo:/oauth2redirect"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "demo",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "User",
+      "email": "demo@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo123",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}
