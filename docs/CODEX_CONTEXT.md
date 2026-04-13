@@ -3,8 +3,8 @@
 ## Snapshot
 - Repository: `flutter_demo`
 - Branch: `main`
-- Current HEAD: `0e3c3dd`
-- Remote status: local `main` is ahead of `origin/main` by 1 commit (Phase 2 refresh-token work)
+- Current HEAD: `ec3dd7d`
+- Remote status: local `main` has unpushed Phase 3 Remember Me + secure-storage implementation changes
 - Primary targets: iOS simulator, macOS desktop, Chrome web
 
 ## Commit Timeline (authoritative)
@@ -18,6 +18,9 @@
 8. `a44614f` - Add OAuth2 Keycloak integration proposal
 9. `7b85d65` - Implement OAuth2 Phase 1 with Keycloak login/logout
 10. `0e3c3dd` - Add refresh-token handling with persisted auth session
+11. `6a103da` - Rework docs for OAuth2 Phase 2 refresh-token delivery
+12. `252dd17` - Show last token refresh time in auth panel
+13. `ec3dd7d` - Rename proposal docs with ordered prefixes
 
 ## Implemented Features
 
@@ -55,6 +58,15 @@ Primary files:
 - `lib/features/auth/state/auth_controller.dart`
 - `lib/features/lorem/ui/lorem_loader_page.dart`
 
+### 4) Remember Me + storage policy alignment (Phase 3)
+- Remember Me checkbox in auth UI
+- Remember Me preference persisted and reused
+- Auth sign-in request passes remember-me hint to Keycloak
+- Storage policy aligns with Remember Me:
+  - ON: session persisted across app restarts
+  - OFF: session not persisted
+- Keycloak realm remember-me session policies configured and documented
+
 ## Local Keycloak Setup
 - Docker stack in `infra/keycloak`
 - Realm: `flutter-demo`
@@ -82,6 +94,8 @@ docker compose -f infra/keycloak/docker-compose.yml down
   - `docs/oauth2_phase1_report.md`
 - Phase 2 refresh-token delivery comparison:
   - `docs/oauth2_phase2_refresh_report.md`
+- Phase 3 remember-me + secure storage delivery comparison:
+  - `docs/oauth2_phase3_remember_me_report.md`
 - Earlier lorem feature proposal:
   - `docs/01_lorem_loader_proposal.md`
 

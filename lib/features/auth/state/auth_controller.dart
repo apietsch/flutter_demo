@@ -16,6 +16,7 @@ class AuthController extends ChangeNotifier {
   AuthSession? _session;
   String? _errorMessage;
   DateTime? _lastRefreshAt;
+  bool _rememberMe = false;
   Timer? _refreshTimer;
   bool _initialized = false;
 
@@ -23,14 +24,21 @@ class AuthController extends ChangeNotifier {
   AuthSession? get session => _session;
   String? get errorMessage => _errorMessage;
   DateTime? get lastRefreshAt => _lastRefreshAt;
+  bool get rememberMe => _rememberMe;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
   bool get isLoading => _status == AuthStatus.loading;
+
+  void setRememberMe(bool value) {
+    _rememberMe = value;
+    notifyListeners();
+  }
 
   Future<void> initialize() async {
     if (_initialized) {
       return;
     }
     _initialized = true;
+    _rememberMe = await _authService.loadRememberMe();
 
     final restored = await _authService.restoreSession();
     if (restored == null) {
@@ -50,8 +58,9 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _session = await _authService.signIn();
-      await _authService.persistSession(_session!);
+      _session = await _authService.signIn(rememberMe: _rememberMe);
+      await _authService.saveRememberMe(_rememberMe);
+      await _persistSessionForCurrentPolicy(_session!);
       _status = AuthStatus.authenticated;
       _errorMessage = null;
       _lastRefreshAt = null;
@@ -107,7 +116,7 @@ class AuthController extends ChangeNotifier {
     try {
       final refreshed = await _authService.refreshSession(current);
       _session = refreshed;
-      await _authService.persistSession(refreshed);
+      await _persistSessionForCurrentPolicy(refreshed);
       _status = AuthStatus.authenticated;
       _errorMessage = null;
       _lastRefreshAt = DateTime.now();
@@ -165,6 +174,14 @@ class AuthController extends ChangeNotifier {
     _lastRefreshAt = null;
     await _authService.clearSession();
     notifyListeners();
+  }
+
+  Future<void> _persistSessionForCurrentPolicy(AuthSession session) async {
+    if (_rememberMe) {
+      await _authService.persistSession(session);
+      return;
+    }
+    await _authService.clearSession();
   }
 
   @override

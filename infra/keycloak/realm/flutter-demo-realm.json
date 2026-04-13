@@ -2,9 +2,14 @@
   "realm": "flutter-demo",
   "enabled": true,
   "registrationAllowed": false,
+  "rememberMe": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": true,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "ssoSessionIdleTimeoutRememberMe": 604800,
+  "ssoSessionMaxLifespanRememberMe": 2592000,
   "clients": [
     {
       "clientId": "flutter-app",

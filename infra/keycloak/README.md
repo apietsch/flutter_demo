@@ -24,6 +24,10 @@ docker compose -f infra/keycloak/docker-compose.yml down
 - Demo user:
   - Username: `demo`
   - Password: `demo123`
+- Remember Me:
+  - Enabled: `true`
+  - Standard SSO idle/max: `30m / 10h`
+  - Remember-me SSO idle/max: `7d / 30d`
 
 ## Notes for Flutter OAuth2
 Use these base values later in the app integration:

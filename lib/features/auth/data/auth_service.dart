@@ -63,12 +63,14 @@ class AuthSession {
 }
 
 abstract class AuthService {
-  Future<AuthSession> signIn();
+  Future<AuthSession> signIn({required bool rememberMe});
   Future<AuthSession> refreshSession(AuthSession currentSession);
   Future<void> signOut(AuthSession? session);
   Future<AuthSession?> restoreSession();
   Future<void> persistSession(AuthSession session);
   Future<void> clearSession();
+  Future<void> saveRememberMe(bool value);
+  Future<bool> loadRememberMe();
 }
 
 class OidcAuthService implements AuthService {
@@ -82,7 +84,7 @@ class OidcAuthService implements AuthService {
   final AuthSessionStore _sessionStore;
 
   @override
-  Future<AuthSession> signIn() async {
+  Future<AuthSession> signIn({required bool rememberMe}) async {
     try {
       final token = await _appAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(
@@ -90,7 +92,9 @@ class OidcAuthService implements AuthService {
           AuthConfig.redirectUri,
           issuer: AuthConfig.issuer,
           scopes: AuthConfig.scopes,
-          promptValues: const <String>['login'],
+          additionalParameters: rememberMe
+              ? const <String, String>{'rememberMe': 'true'}
+              : null,
         ),
       );
 
@@ -175,6 +179,16 @@ class OidcAuthService implements AuthService {
   @override
   Future<void> clearSession() async {
     await _sessionStore.clear();
+  }
+
+  @override
+  Future<void> saveRememberMe(bool value) async {
+    await _sessionStore.saveRememberMe(value);
+  }
+
+  @override
+  Future<bool> loadRememberMe() async {
+    return _sessionStore.loadRememberMe();
   }
 
   bool _isUserCancel(PlatformException error) {

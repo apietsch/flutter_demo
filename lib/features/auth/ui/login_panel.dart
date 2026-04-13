@@ -47,6 +47,21 @@ class LoginPanel extends StatelessWidget {
                     style: const TextStyle(color: Colors.redAccent),
                   ),
                 ],
+                const SizedBox(height: 8),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: controller.rememberMe,
+                  onChanged: controller.isLoading
+                      ? null
+                      : (value) {
+                          controller.setRememberMe(value ?? false);
+                        },
+                  title: const Text('Remember me'),
+                  subtitle: const Text(
+                    'Keep login across app restarts with longer session policy.',
+                  ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
                 const SizedBox(height: 10),
                 if (controller.isAuthenticated)
                   FilledButton.tonalIcon(
