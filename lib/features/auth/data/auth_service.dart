@@ -105,6 +105,8 @@ class OidcAuthService implements AuthService {
       throw AuthException(
         error.message ?? 'Authentication failed. Please try again.',
       );
+    } catch (error) {
+      throw AuthException('Unexpected sign-in error: $error');
     }
   }
 
@@ -137,6 +139,8 @@ class OidcAuthService implements AuthService {
       );
     } on PlatformException catch (error) {
       throw AuthException(error.message ?? 'Failed to refresh session.');
+    } catch (error) {
+      throw AuthException('Unexpected refresh error: $error');
     }
   }
 

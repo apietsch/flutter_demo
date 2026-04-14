@@ -51,7 +51,7 @@ class AuthController extends ChangeNotifier {
 
     try {
       _session = await _authService.signIn();
-      await _authService.persistSession(_session!);
+      await _persistSessionBestEffort(_session!);
       _status = AuthStatus.authenticated;
       _errorMessage = null;
       _lastRefreshAt = null;
@@ -107,7 +107,7 @@ class AuthController extends ChangeNotifier {
     try {
       final refreshed = await _authService.refreshSession(current);
       _session = refreshed;
-      await _authService.persistSession(refreshed);
+      await _persistSessionBestEffort(refreshed);
       _status = AuthStatus.authenticated;
       _errorMessage = null;
       _lastRefreshAt = DateTime.now();
@@ -155,6 +155,14 @@ class AuthController extends ChangeNotifier {
     _refreshTimer = Timer(delay, () {
       unawaited(ensureFreshSession());
     });
+  }
+
+  Future<void> _persistSessionBestEffort(AuthSession session) async {
+    try {
+      await _authService.persistSession(session);
+    } catch (_) {
+      // Persistence failures should not break a valid sign-in session.
+    }
   }
 
   Future<void> _expireSession(String message) async {
