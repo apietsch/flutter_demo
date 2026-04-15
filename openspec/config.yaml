@@ -1,20 +1,41 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Project: Flutter demo app with lorem loader and Keycloak-backed OAuth2/OIDC auth.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Stack:
+  - Flutter/Dart app targeting iOS, macOS, and web.
+  - OAuth via flutter_appauth (native platforms) and flutter_secure_storage for token persistence.
+  - Local Keycloak for dev in infra/keycloak (realm: flutter-demo, client: flutter-app, user: demo/demo123).
+
+  Current implemented capabilities:
+  - Configurable lorem text loading with loading/error states.
+  - Swipe demo UI.
+  - Native OIDC login/logout and protected actions.
+  - Refresh token flow with pre-expiry and on-demand refresh.
+  - Remember Me policy aligned with persistence behavior.
+  - Local-only logout mode available (default enabled via AUTH_LOCAL_LOGOUT_ONLY=true).
+
+  Configuration patterns:
+  - Runtime auth configuration uses --dart-define values (issuer/endpoints, client id, redirect URIs).
+  - For Keycloak discovery, issuer form is preferred:
+    AUTH_ISSUER=https://<host>/realms/flutter-demo
+
+  Platform notes:
+  - iOS/macOS require native redirect URI registration in Info.plist.
+  - macOS keychain persistence needs Keychain Sharing entitlement configured in Xcode.
+  - macOS also needs outbound network client entitlement enabled.
+
+  Validation baseline:
+  - Changes should pass flutter analyze and flutter test.
+
+rules:
+  proposal:
+    - Reflect current implemented behavior and clearly identify delta/non-goals.
+    - Include rollout and validation notes for iOS and macOS when auth changes are involved.
+  design:
+    - Call out platform differences explicitly (web vs native auth path).
+    - Prefer adapter-based design when platform-specific auth implementations are needed.
+  tasks:
+    - Keep tasks concrete and testable.
+    - Include docs updates whenever runtime config or operational setup changes.
