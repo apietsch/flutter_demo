@@ -4,6 +4,7 @@ import 'package:flutter_demo/features/auth/state/auth_controller.dart';
 import 'package:flutter_demo/features/auth/ui/login_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_demo/features/lorem/data/lorem_repository.dart';
+import 'package:flutter_demo/features/screening/ui/screening_workspace_page.dart';
 import 'package:flutter_demo/features/swipe/ui/swipe_demo_page.dart';
 
 class LoremLoaderPage extends StatefulWidget {
@@ -92,6 +93,17 @@ class _LoremLoaderPageState extends State<LoremLoaderPage> {
       appBar: AppBar(
         title: const Text('Lorem Loader'),
         actions: [
+          IconButton(
+            tooltip: 'Open paper screening workspace',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const ScreeningWorkspacePage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.fact_check),
+          ),
           IconButton(
             tooltip: 'Open swipe demo',
             onPressed: () {
