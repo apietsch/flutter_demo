@@ -54,6 +54,28 @@ void main() {
 
     expect(find.text('Lorem ipsum dolor sit amet'), findsOneWidget);
   });
+
+  testWidgets('keeps screening workspace entry and removes swipe demo action', (
+    tester,
+  ) async {
+    final authController = AuthController(
+      authService: _FakeAuthService.loggedOut(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LoremLoaderPage(
+          loader: _FakeLoader.success('Lorem ipsum'),
+          authController: authController,
+        ),
+      ),
+    );
+
+    expect(find.byTooltip('Open paper screening workspace'), findsOneWidget);
+    expect(find.byIcon(Icons.fact_check), findsOneWidget);
+    expect(find.byIcon(Icons.swipe), findsNothing);
+    expect(find.byTooltip('Open swipe demo'), findsNothing);
+  });
 }
 
 class _FakeLoader implements LoremTextLoader {

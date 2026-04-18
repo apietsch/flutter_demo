@@ -10,9 +10,11 @@ context: |
 
   Current implemented capabilities:
   - Configurable lorem text loading with loading/error states.
-  - Swipe demo UI.
+  - Demo entry points expose the lorem loader and screening workspace, while retired demos are removed from active navigation.
+  - Paper screening workspace supports first-pass include, exclude, and maybe decisions for seeded papers.
   - Native OIDC login/logout and protected actions.
   - Refresh token flow with pre-expiry and on-demand refresh.
+  - Secure persisted auth session restore and refresh handling.
   - Remember Me policy aligned with persistence behavior.
   - Local-only logout mode available (default enabled via AUTH_LOCAL_LOGOUT_ONLY=true).
 

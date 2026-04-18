@@ -5,7 +5,6 @@ import 'package:flutter_demo/features/auth/ui/login_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_demo/features/lorem/data/lorem_repository.dart';
 import 'package:flutter_demo/features/screening/ui/screening_workspace_page.dart';
-import 'package:flutter_demo/features/swipe/ui/swipe_demo_page.dart';
 
 class LoremLoaderPage extends StatefulWidget {
   const LoremLoaderPage({
@@ -103,15 +102,6 @@ class _LoremLoaderPageState extends State<LoremLoaderPage> {
               );
             },
             icon: const Icon(Icons.fact_check),
-          ),
-          IconButton(
-            tooltip: 'Open swipe demo',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const SwipeDemoPage()),
-              );
-            },
-            icon: const Icon(Icons.swipe),
           ),
         ],
       ),
